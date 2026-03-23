@@ -57,9 +57,9 @@ export default function Navbar() {
         <nav className="hidden md:flex space-x-8">
           <Link href="#about" className="hover:text-blue-600">About Us</Link>
           <Link href="#services" className="hover:text-blue-600">Services</Link>
-          <Link href="#most-tracked-flights" className="hover:text-blue-600">Most Tracked Flights</Link>
+          {/* <Link href="#most-tracked-flights" className="hover:text-blue-600">Most Tracked Flights</Link> */}
           <Link href="#testimonials" className="hover:text-blue-600">Testimonials</Link>
-          <Link href="#case-studies" className="hover:text-blue-600">Case Studies</Link>
+          {/* <Link href="#case-studies" className="hover:text-blue-600">Case Studies</Link> */}
           <Link href="#contact" className="hover:text-blue-600">Contact</Link>
         </nav>
 
