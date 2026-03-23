@@ -80,7 +80,7 @@ export default function Navbar() {
         <nav className="bg-white md:hidden shadow-md flex flex-col">
           <Link href="#about" onClick={closeMenu} className="block px-4 py-3 text-gray-600 hover:text-blue-600 border-b border-gray-100">About Us</Link>
           <Link href="#services" onClick={closeMenu} className="block px-4 py-3 text-gray-600 hover:text-blue-600 border-b border-gray-100">Services</Link>
-          <Link href="#most-tracked-flights" onClick={closeMenu} className="block px-4 py-3 text-gray-600 hover:text-blue-600 border-b border-gray-100">Most Tracked Flights</Link>
+          {/* <Link href="#most-tracked-flights" onClick={closeMenu} className="block px-4 py-3 text-gray-600 hover:text-blue-600 border-b border-gray-100">Most Tracked Flights</Link> */}
           <Link href="#testimonials" onClick={closeMenu} className="block px-4 py-3 text-gray-600 hover:text-blue-600 border-b border-gray-100">Testimonials</Link>
           <Link href="#contact" onClick={closeMenu} className="block px-4 py-3 text-gray-600 hover:text-blue-600">Contact</Link>
         </nav>
