@@ -12,7 +12,7 @@ export default function HeroSection() {
           Innovative delivery app for your buisness. Streamline operations, boost efficiency, and enhance customer satisfaction with our cutting-edge solution.
         </p>
         <a
-          href="#login"
+          href="/login"
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300"
         >
           Log In
