@@ -5,7 +5,6 @@ const createJestConfig = nextJest({
   dir: './',
 })
 
-// Dodatkowa konfiguracja Jesta
 const config: Config = {
   coverageProvider: 'v8',
   testEnvironment: 'jsdom',
