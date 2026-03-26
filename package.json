@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "jest --watch"
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "mongoose": "^9.3.2",
