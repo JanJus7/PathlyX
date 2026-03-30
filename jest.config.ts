@@ -20,7 +20,16 @@ const config: Config = {
       functions: 95,
       lines:95,
     }
-  }
+  },
+
+  collectCoverageFrom: [
+    'app/**/*.{ts,tsx}',
+    'lib/**/*.{ts,tsx}',
+    'models/**/*.{ts,tsx}',
+    '!app/layout.tsx',
+    '!app/api/auth/**/*',
+    '!app/api/test-db/**/*',
+  ],
 }
 
 export default createJestConfig(config)
