@@ -6,6 +6,10 @@ jest.mock("next-auth/react", () => ({
   signIn: jest.fn(),
 }));
 
+jest.mock("next/navigation", () => ({
+  useSearchParams: jest.fn(() => new URLSearchParams()),
+}));
+
 describe("Login page (/login).", () => {
   it("It should display the Google login button", () => {
     render(<LoginPage />);
