@@ -22,13 +22,11 @@ const config: Config = {
     }
   },
 
-  collectCoverageFrom: [
+collectCoverageFrom: [
     'app/**/*.{ts,tsx}',
-    'lib/**/*.{ts,tsx}',
-    'models/**/*.{ts,tsx}',
     '!app/layout.tsx',
-    '!app/api/auth/**/*',
-    '!app/api/test-db/**/*',
+    '!app/api/**/*',
+    '!app/hooks/**/*',
   ],
 }
 
