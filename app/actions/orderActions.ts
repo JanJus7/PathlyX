@@ -3,6 +3,7 @@
 import dbConnect from "../../lib/mongodb";
 import Order from "../../models/Order";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
 
 export async function createOrder(formData: FormData) {
@@ -46,4 +47,14 @@ export async function getActiveOrders() {
     restaurantId: order.restaurantId.toString(),
     createdAt: order.createdAt.toISOString(),
   }));
+}
+
+export async function markAsDelivered(orderId: string) {
+  await dbConnect();
+  
+  await Order.findByIdAndUpdate(orderId, {
+    status: "delivered"
+  });
+
+  revalidatePath("/dashboard");
 }
