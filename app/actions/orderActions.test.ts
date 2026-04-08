@@ -1,7 +1,11 @@
-import { createOrder } from "./orderActions";
+import { TextEncoder, TextDecoder } from 'util';
+Object.assign(global, { TextEncoder, TextDecoder });
+
+import { createOrder, markAsDelivered } from "./orderActions";
 import Order from "../../models/Order";
 import dbConnect from "../../lib/mongodb";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 jest.mock("mongoose", () => ({
   Types: {
@@ -15,17 +19,21 @@ jest.mock("mongoose", () => ({
 jest.mock("../../lib/mongodb", () => jest.fn());
 jest.mock("../../models/Order", () => ({
   create: jest.fn(),
+  findByIdAndUpdate: jest.fn(),
 }));
 jest.mock("next/navigation", () => ({
   redirect: jest.fn(),
 }));
+jest.mock("next/cache", () => ({
+  revalidatePath: jest.fn(),
+}));
 
-describe("createOrder Server Action", () => {
+describe("Server Actions", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("connects to the database, saves the order, and redirects to the dashboard", async () => {
+  it("createOrder saves order and redirects", async () => {
     const formData = new FormData();
     formData.append("address", "Testowa 15");
     formData.append("price", "45.50");
@@ -46,5 +54,17 @@ describe("createOrder Server Action", () => {
     }));
 
     expect(redirect).toHaveBeenCalledWith("/dashboard");
+  });
+
+  it("markAsDelivered updates status and revalidates path", async () => {
+    const fakeOrderId = "12345";
+    
+    await markAsDelivered(fakeOrderId);
+
+    expect(dbConnect).toHaveBeenCalled();
+    expect(Order.findByIdAndUpdate).toHaveBeenCalledWith(fakeOrderId, {
+      status: "delivered"
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/dashboard");
   });
 });

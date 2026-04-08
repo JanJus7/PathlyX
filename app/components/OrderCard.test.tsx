@@ -25,7 +25,7 @@ describe("OrderCard Component", () => {
     expect(navLink).toBeInTheDocument();
     expect(navLink).toHaveAttribute(
       "href",
-      "https://www.google.com/maps/search/?api=1&query=Main+Street+123%2C+App+4",
+      "https://www.google.com/maps/dir/?api=1&destination=Main%20Street%20123%2C%20App%204",
     );
 
     expect(
