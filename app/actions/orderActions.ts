@@ -27,3 +27,23 @@ export async function createOrder(formData: FormData) {
 
   redirect("/dashboard");
 }
+
+export async function getActiveOrders() {
+  await dbConnect();
+
+  const orders = await Order.find({ status: "active" })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  return orders.map((order: { _id: mongoose.Types.ObjectId; address: string; price: number; platform: string; paymentMethod: string; targetDeliveryTime?: string; status: string; restaurantId: mongoose.Types.ObjectId; createdAt: Date; }) => ({
+    _id: order._id.toString(),
+    address: order.address,
+    price: order.price,
+    platform: order.platform,
+    paymentMethod: order.paymentMethod,
+    targetDeliveryTime: order.targetDeliveryTime || "Jak najszybciej",
+    status: order.status,
+    restaurantId: order.restaurantId.toString(),
+    createdAt: order.createdAt.toISOString(),
+  }));
+}
