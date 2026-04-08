@@ -12,17 +12,21 @@ const config: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
+  
+  transformIgnorePatterns: [
+    '/node_modules/(?!(bson|mongodb|mongoose)/)'
+  ],
 
   coverageThreshold: {
     global: {
       statements: 95,
       branches: 95,
       functions: 95,
-      lines:95,
+      lines: 95,
     }
   },
 
-collectCoverageFrom: [
+  collectCoverageFrom: [
     'app/**/*.{ts,tsx}',
     '!app/layout.tsx',
     '!app/api/**/*',
