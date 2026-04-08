@@ -5,7 +5,7 @@ describe("OrderCard Component", () => {
   const mockOrder = {
     _id: "12345abcdef",
     address: "ul. Testowa 15, m. 4",
-    price: 45.50,
+    price: 45.5,
     platform: "uber",
     paymentMethod: "card",
     targetDeliveryTime: "14:30",
@@ -20,9 +20,11 @@ describe("OrderCard Component", () => {
     expect(screen.getByText(/45.50/i)).toBeInTheDocument();
 
     expect(screen.getByText(/14:30/i)).toBeInTheDocument();
-    
+
     expect(screen.getByText(/uber/i)).toBeInTheDocument();
 
-    expect(screen.getByRole("button", { name: /Nawiguj/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Navigate/i }),
+    ).toBeInTheDocument();
   });
 });
