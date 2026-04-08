@@ -3,6 +3,15 @@ import Order from "../../models/Order";
 import dbConnect from "../../lib/mongodb";
 import { redirect } from "next/navigation";
 
+jest.mock("mongoose", () => ({
+  Types: {
+    ObjectId: jest.fn().mockImplementation((id) => id),
+  },
+  Schema: jest.fn(),
+  model: jest.fn(),
+  models: {},
+}));
+
 jest.mock("../../lib/mongodb", () => jest.fn());
 jest.mock("../../models/Order", () => ({
   create: jest.fn(),
