@@ -5,6 +5,7 @@ import { getActiveOrders } from "../actions/orderActions";
 jest.mock("../actions/orderActions", () => ({
   getActiveOrders: jest.fn(),
   markAsDelivered: jest.fn(),
+  undoDelivery: jest.fn(),
 }));
 
 describe("Dashboard Main Page (/dashboard)", () => {
