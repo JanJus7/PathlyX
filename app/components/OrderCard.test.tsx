@@ -3,6 +3,7 @@ import OrderCard from "./OrderCard";
 
 jest.mock("../actions/orderActions", () => ({
   markAsDelivered: jest.fn(),
+  undoDelivery: jest.fn(),
 }));
 
 describe("OrderCard Component", () => {
@@ -45,5 +46,18 @@ describe("OrderCard Component", () => {
     expect(screen.getByText("Cash!")).toBeInTheDocument();
     
     expect(screen.getByText(/As soon as possible/i)).toBeInTheDocument();
+  });
+
+  it("renders the undo button when order is delivered", () => {
+    const deliveredOrder = { 
+      ...mockOrder, 
+      status: "delivered" 
+    };
+    
+    render(<OrderCard order={deliveredOrder as any} />);
+
+    expect(screen.queryByRole("link", { name: /Navigate/i })).not.toBeInTheDocument();
+    
+    expect(screen.getByRole("button", { name: /Undo Delivery/i })).toBeInTheDocument();
   });
 });

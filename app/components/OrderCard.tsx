@@ -1,5 +1,5 @@
 import React from "react";
-import { markAsDelivered } from "../actions/orderActions";
+import { markAsDelivered, undoDelivery } from "../actions/orderActions";
 
 export interface Order {
   _id: string;
@@ -19,6 +19,7 @@ export default function OrderCard({ order }: OrderCardProps) {
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(order.address)}`;
 
   const markDeliveredWithId = markAsDelivered.bind(null, order._id);
+  const undoDeliveryWithId = undoDelivery.bind(null, order._id);
 
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col gap-4 transition-all hover:shadow-md">
@@ -98,8 +99,8 @@ export default function OrderCard({ order }: OrderCardProps) {
           </form>
         </div>
       ) : (
-        <div className="pt-2 border-t border-slate-100 mt-auto">
-          <div className="w-full flex items-center justify-center gap-2 bg-slate-50 text-slate-400 font-bold py-3.5 px-4 rounded-xl">
+        <div className="pt-2 border-t border-slate-100 mt-auto flex flex-col gap-2">
+          <div className="w-full flex items-center justify-center gap-2 bg-slate-50 text-slate-400 font-bold py-3.5 px-4 rounded-xl border border-slate-200">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -115,6 +116,28 @@ export default function OrderCard({ order }: OrderCardProps) {
             </svg>
             Delivered
           </div>
+
+          <form action={undoDeliveryWithId}>
+            <button
+              type="submit"
+              className="w-full flex items-center justify-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-3 px-4 rounded-xl transition-colors active:scale-[0.98]"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                />
+              </svg>
+              Undo Delivery
+            </button>
+          </form>
         </div>
       )}
     </div>

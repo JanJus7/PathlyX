@@ -1,7 +1,7 @@
 import { TextEncoder, TextDecoder } from 'util';
 Object.assign(global, { TextEncoder, TextDecoder });
 
-import { createOrder, markAsDelivered, getActiveOrders, getDeliveredOrders } from "./orderActions";
+import { createOrder, markAsDelivered, getActiveOrders, getDeliveredOrders, undoDelivery } from "./orderActions";
 import Order from "../../models/Order";
 import dbConnect from "../../lib/mongodb";
 import { redirect } from "next/navigation";
@@ -141,5 +141,17 @@ describe("Server Actions", () => {
     expect(orders[0].targetDeliveryTime).toBe("As soon as possible");
     expect(orders[0].restaurantId).toBe("");
     expect(orders[0].createdAt).toBeDefined();
+  });
+
+  it("undoDelivery reverts status to active and revalidates paths", async () => {
+    const fakeOrderId = "12345";
+    
+    await undoDelivery(fakeOrderId);
+
+    expect(dbConnect).toHaveBeenCalled();
+    expect(Order.findByIdAndUpdate).toHaveBeenCalledWith(fakeOrderId, {
+      status: "active"
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/dashboard/history");
   });
 });

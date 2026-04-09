@@ -78,3 +78,13 @@ export async function getDeliveredOrders() {
     createdAt: order.createdAt?.toISOString() || new Date().toISOString(),
   }));
 }
+
+export async function undoDelivery(orderId: string) {
+  await dbConnect();
+  
+  await Order.findByIdAndUpdate(orderId, {
+    status: "active"
+  });
+
+  revalidatePath("/dashboard/history");
+}

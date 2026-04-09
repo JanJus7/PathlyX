@@ -5,6 +5,7 @@ import { getDeliveredOrders } from "../../actions/orderActions";
 jest.mock("../../actions/orderActions", () => ({
   getDeliveredOrders: jest.fn(),
   markAsDelivered: jest.fn(),
+  undoDelivery: jest.fn(),
 }));
 
 describe("History Page (/dashboard/history)", () => {
