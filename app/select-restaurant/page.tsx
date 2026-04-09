@@ -9,7 +9,10 @@ import AutoSelect from "./AutoSelect";
 
 export default async function SelectRestaurantPage() {
   const session = await getServerSession(authOptions);
-  if (!session?.user) redirect("/login");
+  if (!session?.user) {
+    redirect("/login");
+    return null;
+  }
 
   await dbConnect();
   const user = session.user as any;
