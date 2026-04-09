@@ -1,7 +1,22 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, DefaultSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      role: string;
+    } & DefaultSession["user"];
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    role: string;
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -39,6 +54,25 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
     },
+    async jwt({ token, user }) {
+      if (user) {
+        await dbConnect();
+        const dbUser = await User.findOne({ email: user?.email });
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.id = dbUser._id.toString();
+        }
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session?.user) {
+        // Czysty TypeScript! Bez używania 'any'
+        session.user.role = token.role;
+        session.user.id = token.id;
+      }
+      return session;
+    }
   },
 };
 

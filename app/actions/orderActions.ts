@@ -5,9 +5,28 @@ import Order from "../../models/Order";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
+import { cookies } from "next/headers";
+interface OrderDocument {
+  _id: mongoose.Types.ObjectId;
+  address: string;
+  price: number;
+  platform: string;
+  paymentMethod: string;
+  targetDeliveryTime?: string;
+  status: string;
+  restaurantId?: mongoose.Types.ObjectId;
+  createdAt: Date;
+}
 
 export async function createOrder(formData: FormData) {
   await dbConnect();
+  
+  const cookieStore = await cookies();
+  const restaurantId = cookieStore.get("activeRestaurantId")?.value;
+
+  if (!restaurantId) {
+    throw new Error("Missing activeRestaurantId cookie");
+  }
 
   const address = formData.get("address");
   const price = formData.get("price");
@@ -15,15 +34,13 @@ export async function createOrder(formData: FormData) {
   const paymentMethod = formData.get("paymentMethod");
   const deliveryTime = formData.get("deliveryTime");
 
-  const dummyRestaurantId = new mongoose.Types.ObjectId("64b8f8f01234567890123456");
-
   await Order.create({
     address: address,
     price: Number(price),
     platform: platform,
     paymentMethod: paymentMethod,
     targetDeliveryTime: deliveryTime,
-    restaurantId: dummyRestaurantId,
+    restaurantId: new mongoose.Types.ObjectId(restaurantId),
   });
 
   redirect("/dashboard");
@@ -42,11 +59,19 @@ export async function markAsDelivered(orderId: string) {
 export async function getActiveOrders() {
   await dbConnect();
 
-  const orders = await Order.find({ status: "active" })
-    .sort({ createdAt: -1 })
-    .lean();
+  const cookieStore = await cookies();
+  const restaurantId = cookieStore.get("activeRestaurantId")?.value;
 
-  return orders.map((order: { _id: mongoose.Types.ObjectId; address: string; price: number; platform: string; paymentMethod: string; targetDeliveryTime?: string; status: string; restaurantId: mongoose.Types.ObjectId; createdAt: Date; }) => ({
+  if (!restaurantId) return [];
+
+  const orders = (await Order.find({ 
+    status: "active",
+    restaurantId: new mongoose.Types.ObjectId(restaurantId)
+  })
+    .sort({ createdAt: -1 })
+    .lean()) as OrderDocument[];
+
+  return orders.map((order) => ({
     _id: order._id.toString(),
     address: order.address,
     price: order.price,
@@ -62,11 +87,19 @@ export async function getActiveOrders() {
 export async function getDeliveredOrders() {
   await dbConnect();
   
-  const orders = await Order.find({ status: "delivered" })
-    .sort({ updatedAt: -1 })
-    .lean();
+  const cookieStore = await cookies();
+  const restaurantId = cookieStore.get("activeRestaurantId")?.value;
 
-  return orders.map((order: { _id: mongoose.Types.ObjectId; address: string; price: number; platform: string; paymentMethod: string; targetDeliveryTime?: string; status: string; restaurantId: mongoose.Types.ObjectId; createdAt: Date; }) => ({
+  if (!restaurantId) return [];
+
+  const orders = (await Order.find({ 
+    status: "delivered",
+    restaurantId: new mongoose.Types.ObjectId(restaurantId)
+  })
+    .sort({ updatedAt: -1 })
+    .lean()) as OrderDocument[];
+
+  return orders.map((order) => ({
     _id: order._id.toString(),
     address: order.address,
     price: order.price,

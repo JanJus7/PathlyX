@@ -5,6 +5,15 @@ jest.mock("../../actions/orderActions", () => ({
   createOrder: jest.fn(),
 }));
 
+jest.mock("next-auth/next", () => ({
+  getServerSession: jest.fn().mockResolvedValue({
+    user: { id: "user123", role: "admin" }
+  }),
+}));
+jest.mock("../../api/auth/[...nextauth]/route", () => ({
+  authOptions: {},
+}));
+
 describe("Add Order Page (/dashboard/add-order)", () => {
   it("powinna renderować nagłówek i wszystkie wymagane pola formularza", () => {
     render(<AddOrderPage />);
