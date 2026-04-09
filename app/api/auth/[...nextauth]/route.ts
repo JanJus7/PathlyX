@@ -67,7 +67,6 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session?.user) {
-        // Czysty TypeScript! Bez używania 'any'
         session.user.role = token.role;
         session.user.id = token.id;
       }
