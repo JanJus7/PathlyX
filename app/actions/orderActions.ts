@@ -29,6 +29,16 @@ export async function createOrder(formData: FormData) {
   redirect("/dashboard");
 }
 
+export async function markAsDelivered(orderId: string) {
+  await dbConnect();
+  
+  await Order.findByIdAndUpdate(orderId, {
+    status: "delivered"
+  });
+
+  revalidatePath("/dashboard");
+}
+
 export async function getActiveOrders() {
   await dbConnect();
 
@@ -42,19 +52,29 @@ export async function getActiveOrders() {
     price: order.price,
     platform: order.platform,
     paymentMethod: order.paymentMethod,
-    targetDeliveryTime: order.targetDeliveryTime || "Jak najszybciej",
+    targetDeliveryTime: order.targetDeliveryTime || "As soon as possible",
     status: order.status,
-    restaurantId: order.restaurantId.toString(),
-    createdAt: order.createdAt.toISOString(),
+    restaurantId: order.restaurantId?.toString() || "",
+    createdAt: order.createdAt?.toISOString() || new Date().toISOString(),
   }));
 }
 
-export async function markAsDelivered(orderId: string) {
+export async function getDeliveredOrders() {
   await dbConnect();
   
-  await Order.findByIdAndUpdate(orderId, {
-    status: "delivered"
-  });
+  const orders = await Order.find({ status: "delivered" })
+    .sort({ updatedAt: -1 })
+    .lean();
 
-  revalidatePath("/dashboard");
+  return orders.map((order: { _id: mongoose.Types.ObjectId; address: string; price: number; platform: string; paymentMethod: string; targetDeliveryTime?: string; status: string; restaurantId: mongoose.Types.ObjectId; createdAt: Date; }) => ({
+    _id: order._id.toString(),
+    address: order.address,
+    price: order.price,
+    platform: order.platform,
+    paymentMethod: order.paymentMethod,
+    targetDeliveryTime: order.targetDeliveryTime || "As soon as possible",
+    status: order.status,
+    restaurantId: order.restaurantId?.toString() || "",
+    createdAt: order.createdAt?.toISOString() || new Date().toISOString(),
+  }));
 }

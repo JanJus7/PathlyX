@@ -32,4 +32,18 @@ describe("OrderCard Component", () => {
       screen.getByRole("button", { name: /Mark as Delivered/i }),
     ).toBeInTheDocument();
   });
+
+  it("renders cash payment method and fallback delivery time correctly", () => {
+    const cashOrder = { 
+      ...mockOrder, 
+      paymentMethod: "cash", 
+      targetDeliveryTime: undefined 
+    };
+    
+    render(<OrderCard order={cashOrder as any} />);
+
+    expect(screen.getByText("Cash!")).toBeInTheDocument();
+    
+    expect(screen.getByText(/As soon as possible/i)).toBeInTheDocument();
+  });
 });

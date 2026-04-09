@@ -1,7 +1,7 @@
 import { TextEncoder, TextDecoder } from 'util';
 Object.assign(global, { TextEncoder, TextDecoder });
 
-import { createOrder, markAsDelivered } from "./orderActions";
+import { createOrder, markAsDelivered, getActiveOrders, getDeliveredOrders } from "./orderActions";
 import Order from "../../models/Order";
 import dbConnect from "../../lib/mongodb";
 import { redirect } from "next/navigation";
@@ -17,10 +17,20 @@ jest.mock("mongoose", () => ({
 }));
 
 jest.mock("../../lib/mongodb", () => jest.fn());
-jest.mock("../../models/Order", () => ({
-  create: jest.fn(),
-  findByIdAndUpdate: jest.fn(),
-}));
+
+jest.mock("../../models/Order", () => {
+  const leanMock = jest.fn();
+  const sortMock = jest.fn().mockReturnValue({ lean: leanMock });
+  
+  return {
+    create: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    find: jest.fn().mockReturnValue({ sort: sortMock }), 
+    
+    _leanMock: leanMock 
+  };
+});
+
 jest.mock("next/navigation", () => ({
   redirect: jest.fn(),
 }));
@@ -66,5 +76,70 @@ describe("Server Actions", () => {
       status: "delivered"
     });
     expect(revalidatePath).toHaveBeenCalledWith("/dashboard");
+  });
+
+  it("getActiveOrders fetches and formats active orders", async () => {
+    (Order as unknown as { _leanMock: jest.Mock })._leanMock.mockResolvedValueOnce([
+      {
+        _id: { toString: () => "order_123" },
+        address: "Active Street 1",
+        price: 50.0,
+        platform: "uber",
+        paymentMethod: "card",
+        status: "active",
+        restaurantId: { toString: () => "rest_123" },
+        createdAt: { toISOString: () => "2023-10-10T12:00:00Z" },
+      }
+    ]);
+
+    const orders = await getActiveOrders();
+
+    expect(dbConnect).toHaveBeenCalled();
+    expect(Order.find).toHaveBeenCalledWith({ status: "active" });
+    expect(orders).toHaveLength(1);
+    expect(orders[0].address).toBe("Active Street 1");
+    expect(orders[0]._id).toBe("order_123");
+  });
+
+  it("getDeliveredOrders fetches and formats delivered orders", async () => {
+    (Order as unknown as { _leanMock: jest.Mock })._leanMock.mockResolvedValueOnce([
+      {
+        _id: { toString: () => "order_999" },
+        address: "History Avenue 9",
+        price: 120.0,
+        platform: "wolt",
+        paymentMethod: "online",
+        status: "delivered",
+        restaurantId: { toString: () => "rest_123" },
+        createdAt: { toISOString: () => "2023-10-11T14:00:00Z" },
+      }
+    ]);
+
+    const orders = await getDeliveredOrders();
+
+    expect(dbConnect).toHaveBeenCalled();
+    expect(Order.find).toHaveBeenCalledWith({ status: "delivered" });
+    expect(orders).toHaveLength(1);
+    expect(orders[0].address).toBe("History Avenue 9");
+    expect(orders[0]._id).toBe("order_999");
+  });
+
+  it("handles missing optional fields in getActiveOrders gracefully", async () => {
+    (Order as unknown as { _leanMock: jest.Mock })._leanMock.mockResolvedValueOnce([
+      {
+        _id: { toString: () => "order_missing_fields" },
+        address: "No Time Street",
+        price: 30.0,
+        platform: "glovo",
+        paymentMethod: "cash",
+        status: "active",
+      }
+    ]);
+
+    const orders = await getActiveOrders();
+
+    expect(orders[0].targetDeliveryTime).toBe("As soon as possible");
+    expect(orders[0].restaurantId).toBe("");
+    expect(orders[0].createdAt).toBeDefined();
   });
 });
