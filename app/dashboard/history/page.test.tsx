@@ -8,6 +8,15 @@ jest.mock("../../actions/orderActions", () => ({
   undoDelivery: jest.fn(),
 }));
 
+jest.mock("next-auth/next", () => ({
+  getServerSession: jest.fn().mockResolvedValue({
+    user: { id: "user123", role: "admin" }
+  }),
+}));
+jest.mock("../../api/auth/[...nextauth]/route", () => ({
+  authOptions: {},
+}));
+
 describe("History Page (/dashboard/history)", () => {
   beforeEach(() => {
     jest.clearAllMocks();

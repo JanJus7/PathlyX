@@ -23,13 +23,15 @@ describe("Login page (/login).", () => {
 
   it("should call signIn when the login button is clicked", () => {
     render(<LoginPage />);
-    
+
     const loginButton = screen.getByRole("button", {
       name: /Sign in with Google/i,
     });
 
     fireEvent.click(loginButton);
 
-    expect(signIn).toHaveBeenCalledWith("google", { callbackUrl: "/dashboard" });
+    expect(signIn).toHaveBeenCalledWith("google", {
+      callbackUrl: "/select-restaurant",
+    });
   });
 });

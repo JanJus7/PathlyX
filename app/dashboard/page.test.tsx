@@ -8,6 +8,15 @@ jest.mock("../actions/orderActions", () => ({
   undoDelivery: jest.fn(),
 }));
 
+jest.mock("next-auth/next", () => ({
+  getServerSession: jest.fn().mockResolvedValue({
+    user: { id: "user123", role: "admin" },
+  }),
+}));
+jest.mock("../api/auth/[...nextauth]/route", () => ({
+  authOptions: {},
+}));
+
 describe("Dashboard Main Page (/dashboard)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -38,7 +47,9 @@ describe("Dashboard Main Page (/dashboard)", () => {
     const PageComponent = await DashboardPage();
     render(PageComponent);
 
-    expect(screen.getByRole("heading", { name: /Active Orders/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /Active Orders/i }),
+    ).toBeInTheDocument();
 
     expect(screen.getByText("ul. Kwiatowa 12")).toBeInTheDocument();
     expect(screen.getByText("Al. Niepodległości 5")).toBeInTheDocument();
@@ -50,6 +61,8 @@ describe("Dashboard Main Page (/dashboard)", () => {
     const PageComponent = await DashboardPage();
     render(PageComponent);
 
-    expect(screen.getByText(/You have no active orders at the moment/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/You have no active orders at the moment/i),
+    ).toBeInTheDocument();
   });
 });

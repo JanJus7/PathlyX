@@ -41,7 +41,7 @@ function LoginContent() {
       )}
 
       <button
-        onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+        onClick={() => signIn("google", { callbackUrl: "/select-restaurant" })}
         className="w-full flex items-center justify-center gap-3 bg-white border border-slate-300 hover:bg-slate-50 hover:shadow-md text-slate-700 font-semibold py-3.5 px-4 rounded-xl transition-all duration-200"
       >
         <svg className="w-6 h-6" viewBox="0 0 48 48">
